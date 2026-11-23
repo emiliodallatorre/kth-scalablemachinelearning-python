@@ -1,12 +1,12 @@
-"""Guida per il laboratorio 1: classificazione di immagini CIFAR-10.
+"""Lab 1 guide: CIFAR-10 image classification.
 
-1. Preparare dati, suddivisioni, preprocessing e semi casuali riproducibili.
-2. Implementare e confrontare AlexNet e ResNet con un budget di calcolo definito.
-3. Studiare capacità, regolarizzazione L2 e dropout.
-4. Valutare l'effetto dell'augmentazione su immagini pulite e corrotte.
-5. Analizzare predizioni, errori ed esempi avversari.
-6. Misurare i costi e discutere i compromessi tra accuratezza e robustezza.
+1. Prepare data, splits, preprocessing, and reproducible random seeds.
+2. Implement and compare AlexNet and ResNet under a defined compute budget.
+3. Investigate capacity, L2 regularization, and dropout.
+4. Evaluate augmentation on clean and corrupted images.
+5. Analyze predictions, errors, and adversarial examples.
+6. Measure costs and discuss accuracy and robustness tradeoffs.
 
-Consultare TASKS.md per i requisiti completi e i challenge opzionali. La consegna
-richiede un notebook eseguito con risultati, riferimenti e discussione.
+See TASKS.md for the full requirements and optional challenges. The submission
+requires an executed notebook with results, references, and discussion.
 """

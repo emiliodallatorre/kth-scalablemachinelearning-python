@@ -1,5 +1,7 @@
-# Istruzioni per gli agenti
+# Agent instructions
 
-Usa messaggi di commit conformi alla convenzione Conventional Commits.
+Use Conventional Commits for commit messages.
 
-Al completamento di ogni attività autonoma, crea subito un commit per le modifiche pertinenti.
+Commit relevant changes immediately after completing a self-contained task.
+
+Keep the README updated when the project structure or contents change, including links to new labs.
