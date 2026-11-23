@@ -7,7 +7,15 @@ authors = [
     { name = "Emilio Dalla Torre", email = "info@emiliodallatorre.it" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.6",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.5",
+    "scikit-learn>=1.9.1",
+    "torch>=2.15.0",
+    "torchvision>=0.29.2",
+]
 
 [project.scripts]
 kth-scalablemachinelearning-python = "kth_scalablemachinelearning_python:main"
