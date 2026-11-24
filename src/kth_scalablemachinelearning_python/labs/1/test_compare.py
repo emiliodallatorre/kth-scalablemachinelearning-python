@@ -30,6 +30,18 @@ class ComparisonTests(unittest.TestCase):
         self.assertTrue(model.training)
         self.assertFalse(torch.equal(original, model.weight))
 
+    @unittest.skipUnless(torch.backends.mps.is_available(), "MPS is unavailable")
+    def test_epoch_runs_on_mps(self):
+        loader = DataLoader(
+            TensorDataset(torch.ones(2, 2), torch.tensor([0, 1])), batch_size=2
+        )
+        model = nn.Linear(2, 2).to("mps")
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+        loss, _, count = run_epoch(model, loader, optimizer=optimizer, device="mps")
+        self.assertEqual(count, 2)
+        self.assertGreater(loss, 0)
+        self.assertEqual(model.weight.device.type, "mps")
+
 
 if __name__ == "__main__":
     unittest.main()

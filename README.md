@@ -2,19 +2,23 @@
 
 This repository contains work for the Scalable Machine Learning course.
 
+## Local setup
+
+On an Intel Mac with an AMD Radeon GPU, use Python 3.10, PyTorch 2.2.2, torchvision 0.17.2, and NumPy below 2, following the [tested MPS configuration](https://github.com/emiliodallatorre/torch-mpsradeon-python). Install the locked dependencies locally with `uv sync`. The comparison can explicitly use `--device mps`; it reports an error if MPS is unavailable rather than silently switching to the CPU.
+
 ## Labs
 
 - [Lab 1: Convolutional neural networks](src/kth_scalablemachinelearning_python/labs/1/)
 
 ### Lab 1: CIFAR-10 starter
 
-In the devcontainer, download and inspect [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) with:
+Download and inspect [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) locally with:
 
 ```sh
 uv run python src/kth_scalablemachinelearning_python/labs/1/lab1.py
 ```
 
-The first run downloads the dataset; subsequent runs reuse the cached files. The default cache is `~/.cache/kth-scalablemachinelearning-python` inside the devcontainer. To use a different cache location, pass `--data-dir /path/to/data`.
+The first run downloads the dataset; subsequent runs reuse the cached files. The default cache is `~/.cache/kth-scalablemachinelearning-python`. To use a different cache location, pass `--data-dir /path/to/data`.
 
 The script loads the original 50,000 training images and 10,000 test images using torchvision. Each example is a 32 x 32 colour image with one of ten labels. Images become channel-first tensors of shape `(3, 32, 32)` with pixel values in `[0, 1]`.
 
@@ -38,7 +42,7 @@ model = build_model("alexnet", seed=42)
 
 ResNet-18 uses torchvision's implementation without pretrained weights, with its initial 7 x 7 stride-2 convolution replaced by a 3 x 3 stride-1 convolution and its initial max-pooling layer removed. This preserves spatial detail for CIFAR-10; its final layer outputs ten logits. Residual connections add each block's input to its transformed features, helping information and gradients flow through the network. The model has 11,173,962 trainable parameters. Like AlexNet, this adaptation remains provisional until checked against Part A9.
 
-Inspect either architecture's parameter count and output shape in the devcontainer:
+Inspect either architecture's parameter count and output shape:
 
 ```sh
 uv run python src/kth_scalablemachinelearning_python/labs/1/models.py --model alexnet --seed 42
@@ -47,12 +51,12 @@ uv run python src/kth_scalablemachinelearning_python/labs/1/models.py --model al
 For a small end-to-end comparison, run:
 
 ```sh
-uv run python src/kth_scalablemachinelearning_python/labs/1/compare.py --batch-size 32 --max-train-batches 20 --max-validation-batches 10
+uv run python src/kth_scalablemachinelearning_python/labs/1/compare.py --device mps --batch-size 8 --max-train-batches 20 --max-validation-batches 10
 ```
 
-Both models use the same seeded split, batch order, and image budget, cross-entropy loss, and SGD with learning rate `0.01` and momentum `0.9`. The CPU run seeds PyTorch for each model and enables deterministic algorithms. It reports per-epoch training loss, training time, validation accuracy, and the actual image counts; the test set is not evaluated. Timing varies by hardware and load, and matching seeds does not eliminate model-dependent randomness such as dropout. Results may also vary across software versions or hardware.
+Both models use the same seeded split, batch order, and image budget, cross-entropy loss, and SGD with learning rate `0.01` and momentum `0.9`. The run seeds PyTorch for each model and enables deterministic algorithms. The default device is CPU; `--device mps` moves the models and batches to MPS. It reports per-epoch training loss, training time, validation accuracy, and the actual image counts; the test set is not evaluated. Timing varies by hardware and load, and matching seeds does not eliminate model-dependent randomness such as dropout. Results may also vary across software versions, hardware, and backends.
 
-The command above trains for one epoch on only 640 images and validates on 320: it is a smoke comparison, not evidence for selecting a model. Omit the batch limits to use the full training and validation splits, and set `--epochs` to change the training budget. A full CPU run may take a long time. No checkpoints, augmentation, or final test evaluation are implemented yet.
+The command above trains for one epoch on only 160 images and validates on 80: it is a smoke comparison, not evidence for selecting a model. Omit the batch limits to use the full training and validation splits, and set `--epochs` to change the training budget. A full run may take a long time. No checkpoints, augmentation, or final test evaluation are implemented yet.
 
 Run the data and model checks with `uv run python -m unittest discover -s src/kth_scalablemachinelearning_python/labs/1 -p "test_*.py"`.
 

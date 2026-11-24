@@ -26,6 +26,7 @@ def run_epoch(
     *,
     optimizer: torch.optim.Optimizer | None = None,
     max_batches: int | None = None,
+    device: torch.device | str = "cpu",
 ) -> tuple[float, float, int]:
     """Return mean cross-entropy, accuracy, and image count."""
     training = optimizer is not None
@@ -36,6 +37,7 @@ def run_epoch(
 
     with torch.set_grad_enabled(training):
         for images, labels in islice(loader, max_batches):
+            images, labels = images.to(device), labels.to(device)
             if optimizer is not None:
                 optimizer.zero_grad()
             logits = model(images)
@@ -69,20 +71,24 @@ def main() -> None:
     parser.add_argument("--epochs", type=positive_int, default=1)
     parser.add_argument("--max-train-batches", type=positive_int)
     parser.add_argument("--max-validation-batches", type=positive_int)
+    parser.add_argument("--device", choices=["cpu", "mps"], default="cpu")
     args = parser.parse_args()
 
+    if args.device == "mps" and not torch.backends.mps.is_available():
+        parser.error("MPS is not available on this machine")
+    device = torch.device(args.device)
     torch.use_deterministic_algorithms(True)
     original_training, test = load_cifar10(args.data_dir)
     training, validation = split_training_data(original_training, seed=args.seed)
     print(
-        f"CPU comparison: seed={args.seed}, batch_size={args.batch_size}, "
+        f"{args.device.upper()} comparison: seed={args.seed}, batch_size={args.batch_size}, "
         f"epochs={args.epochs}, SGD lr=0.01, momentum=0.9",
         flush=True,
     )
 
     for name in ("alexnet", "resnet18"):
         torch.manual_seed(args.seed)
-        model = build_model(name, seed=args.seed)
+        model = build_model(name, seed=args.seed).to(device)
         train_loader, validation_loader, _ = make_data_loaders(
             training, validation, test, batch_size=args.batch_size, seed=args.seed
         )
@@ -93,11 +99,20 @@ def main() -> None:
         for epoch in range(1, args.epochs + 1):
             start = time.perf_counter()
             train_loss, _, train_count = run_epoch(
-                model, train_loader, optimizer=optimizer, max_batches=args.max_train_batches
+                model,
+                train_loader,
+                optimizer=optimizer,
+                max_batches=args.max_train_batches,
+                device=device,
             )
+            if device.type == "mps":
+                torch.mps.synchronize()
             train_seconds = time.perf_counter() - start
             _, validation_accuracy, validation_count = run_epoch(
-                model, validation_loader, max_batches=args.max_validation_batches
+                model,
+                validation_loader,
+                max_batches=args.max_validation_batches,
+                device=device,
             )
             print(
                 f"Epoch {epoch}: train loss={train_loss:.4f} "
