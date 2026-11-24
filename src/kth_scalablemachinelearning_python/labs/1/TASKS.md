@@ -37,9 +37,9 @@ Progress: The current preprocessing converts images to tensors. The split, train
 - [ ] Explain the changes from the original architectures and justify any further modifications
 - [ ] Train both models using a reproducible procedure and compare them under a clearly stated compute budget
 
-Progress: Provisional CIFAR-10 AlexNet and ResNet-18 models share a seeded factory. Both trained and produced validation predictions on MPS; their adaptations still need to be checked against Part A9, and a comparison under a justified compute budget remains.
+Progress: The provided notebook now contains AlexNet and ResNet-18 implemented from PyTorch layers according to Part A9. Its full-data experiment still needs to finish before its results can be assessed.
 
-Preliminary run on the AMD Radeon Pro 5300M: one epoch per model, 45,000 training and 5,000 validation images, batch size 32, seed 42, SGD with learning rate 0.01 and momentum 0.9. Training times exclude validation.
+Earlier exploratory script run on the AMD Radeon Pro 5300M: one epoch per model, 45,000 training and 5,000 validation images, batch size 32, seed 42, SGD with learning rate 0.01 and momentum 0.9. Training times exclude validation. These are not the notebook results: the script used a torchvision ResNet and an AlexNet configuration that differs from Part A9.
 
 | Model | Training loss | Validation accuracy | Training time | Parameters |
 |---|---:|---:|---:|---:|

@@ -12,6 +12,10 @@ On an Intel Mac with an AMD Radeon GPU, use Python 3.10, PyTorch 2.2.2, torchvis
 
 ### Lab 1: CIFAR-10 starter
 
+The assignment is being developed in [the provided notebook](src/kth_scalablemachinelearning_python/labs/1/ID2223_Lab_Session_2.ipynb). Run `uv sync`, then open it with `uv run jupyter lab src/kth_scalablemachinelearning_python/labs/1/ID2223_Lab_Session_2.ipynb`. Part B implements both A9 architectures directly from PyTorch layers and contains the six required experiments; the optional challenges remain open. Its full-data run uses one training epoch per configuration and can take a long time. Checkpoints are kept in memory during the run, not saved as separate files.
+
+The scripts described below are earlier exploratory work, not the notebook submission. In particular, their torchvision-based ResNet does not satisfy the notebook's requirement to implement the architecture directly.
+
 Download and inspect [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) locally with:
 
 ```sh
@@ -60,4 +64,4 @@ The command above trains for one epoch on only 160 images and validates on 80: i
 
 Run the data and model checks with `uv run python -m unittest discover -s src/kth_scalablemachinelearning_python/labs/1 -p "test_*.py"`.
 
-The lab deliverable is an executed notebook; this script does not replace it.
+The lab deliverable is an executed notebook; these scripts do not replace it.
