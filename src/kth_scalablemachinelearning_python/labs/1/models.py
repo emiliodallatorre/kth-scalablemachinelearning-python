@@ -4,6 +4,7 @@ import argparse
 
 import torch
 from torch import nn
+from torchvision.models import resnet18
 
 
 class CifarAlexNet(nn.Module):
@@ -43,17 +44,23 @@ class CifarAlexNet(nn.Module):
 
 def build_model(name: str, *, seed: int = 42) -> nn.Module:
     """Build a reproducibly initialized CPU model without changing the global RNG."""
-    if name != "alexnet":
+    if name not in ("alexnet", "resnet18"):
         raise ValueError(f"Unknown model: {name!r}")
 
     with torch.random.fork_rng(devices=[]), torch.device("cpu"):
         torch.random.default_generator.manual_seed(seed)
-        return CifarAlexNet()
+        if name == "alexnet":
+            return CifarAlexNet()
+        model = resnet18(weights=None, num_classes=10)
+        model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        nn.init.kaiming_normal_(model.conv1.weight, mode="fan_out", nonlinearity="relu")
+        model.maxpool = nn.Identity()
+        return model
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Inspect a CIFAR-10 classifier.")
-    parser.add_argument("--model", choices=["alexnet"], default="alexnet")
+    parser.add_argument("--model", choices=["alexnet", "resnet18"], default="alexnet")
     parser.add_argument("--seed", type=int, default=42, help="Model initialization seed")
     args = parser.parse_args()
 

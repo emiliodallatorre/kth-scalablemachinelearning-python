@@ -22,9 +22,9 @@ It splits the original training set into 45,000 training and 5,000 validation im
 
 The split and training-batch shuffle use seed `42` by default; `--seed` changes both, and `--batch-size` changes the default batch size of `128`. Validation and test loaders retain their fixed order. The loaders use the default of zero worker processes. No augmentation or model-specific normalization is applied yet.
 
-#### AlexNet starter
+#### Models and comparison
 
-`labs/1/models.py` provides `build_model("alexnet", seed=42)`, returning an untrained CPU PyTorch `nn.Module`. The same factory can later expose ResNet with the same input/output interface: batches of `(N, 3, 32, 32)` images in `[0, 1]` produce `(N, 10)` logits. The factory seeds initialization without changing the caller's CPU random state. This alone does not make training reproducible: dropout, optimization, device algorithms, and the data loader also need controlled randomness.
+`labs/1/models.py` provides `build_model("alexnet", seed=42)` and `build_model("resnet18", seed=42)`, returning untrained CPU PyTorch `nn.Module` models. Both accept batches of `(N, 3, 32, 32)` images in `[0, 1]` and produce `(N, 10)` logits. The factory seeds initialization without changing the caller's CPU random state. This alone does not make training reproducible: dropout, optimization, device algorithms, and the data loader also need controlled randomness.
 
 This provisional CIFAR-10 adaptation uses five convolutional layers and three 2 x 2 pooling layers. Compared with original AlexNet, its first convolution is 3 x 3 with stride 1 rather than 11 x 11 with stride 4, preserving detail in the smaller images. It uses torchvision-style channel widths, smaller pooling windows, and no grouped convolutions or local response normalization. The final feature maps are 256 x 4 x 4, followed by two 512-unit fully connected layers with 0.5 dropout and a ten-class output; these smaller layers reduce the classification head's cost. The referenced Part A9 is not in this repository, so its recommended adaptations still need to be checked before treating this as the required baseline.
 
@@ -36,11 +36,23 @@ from models import build_model
 model = build_model("alexnet", seed=42)
 ```
 
-Inspect the architecture's parameter count and output shape in the devcontainer:
+ResNet-18 uses torchvision's implementation without pretrained weights, with its initial 7 x 7 stride-2 convolution replaced by a 3 x 3 stride-1 convolution and its initial max-pooling layer removed. This preserves spatial detail for CIFAR-10; its final layer outputs ten logits. Residual connections add each block's input to its transformed features, helping information and gradients flow through the network. The model has 11,173,962 trainable parameters. Like AlexNet, this adaptation remains provisional until checked against Part A9.
+
+Inspect either architecture's parameter count and output shape in the devcontainer:
 
 ```sh
 uv run python src/kth_scalablemachinelearning_python/labs/1/models.py --model alexnet --seed 42
 ```
+
+For a small end-to-end comparison, run:
+
+```sh
+uv run python src/kth_scalablemachinelearning_python/labs/1/compare.py --batch-size 32 --max-train-batches 20 --max-validation-batches 10
+```
+
+Both models use the same seeded split, batch order, and image budget, cross-entropy loss, and SGD with learning rate `0.01` and momentum `0.9`. The CPU run seeds PyTorch for each model and enables deterministic algorithms. It reports per-epoch training loss, training time, validation accuracy, and the actual image counts; the test set is not evaluated. Timing varies by hardware and load, and matching seeds does not eliminate model-dependent randomness such as dropout. Results may also vary across software versions or hardware.
+
+The command above trains for one epoch on only 640 images and validates on 320: it is a smoke comparison, not evidence for selecting a model. Omit the batch limits to use the full training and validation splits, and set `--epochs` to change the training budget. A full CPU run may take a long time. No checkpoints, augmentation, or final test evaluation are implemented yet.
 
 Run the data and model checks with `uv run python -m unittest discover -s src/kth_scalablemachinelearning_python/labs/1 -p "test_*.py"`.
 

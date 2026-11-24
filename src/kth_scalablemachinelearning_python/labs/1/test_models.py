@@ -33,13 +33,25 @@ class ModelTests(unittest.TestCase):
             models.build_model("unknown")
 
     def test_cifar_batch_produces_ten_logits_and_supports_backpropagation(self):
-        model = models.build_model("alexnet")
         images = torch.rand(2, 3, 32, 32)
         labels = torch.tensor([0, 9])
-        logits = model(images)
-        self.assertEqual(tuple(logits.shape), (2, 10))
-        torch.nn.functional.cross_entropy(logits, labels).backward()
-        self.assertIsNotNone(model.features[0].weight.grad)
+        for name in ("alexnet", "resnet18"):
+            with self.subTest(model=name):
+                model = models.build_model(name)
+                logits = model(images)
+                self.assertEqual(tuple(logits.shape), (2, 10))
+                torch.nn.functional.cross_entropy(logits, labels).backward()
+                self.assertIsNotNone(next(model.parameters()).grad)
+
+    def test_resnet_initialization_is_reproducible(self):
+        first = models.build_model("resnet18", seed=42)
+        repeated = models.build_model("resnet18", seed=42)
+        self.assertTrue(
+            all(
+                torch.equal(a, b)
+                for a, b in zip(first.state_dict().values(), repeated.state_dict().values())
+            )
+        )
 
 
 if __name__ == "__main__":

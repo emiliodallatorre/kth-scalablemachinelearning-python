@@ -37,7 +37,7 @@ Progress: The current preprocessing converts images to tensors; model-specific p
 - [ ] Explain the changes from the original architectures and justify any further modifications
 - [ ] Train both models using a reproducible procedure and compare them under a clearly stated compute budget
 
-Progress: A provisional, untrained CIFAR-10 AlexNet and a seeded model factory are implemented. ResNet and the comparison remain, and the AlexNet adaptation still needs to be checked against Part A9.
+Progress: Provisional CIFAR-10 AlexNet and ResNet-18 models share a seeded factory. A simple CPU training and validation comparison is available; both adaptations still need to be checked against Part A9, and a full comparison under a justified budget remains.
 
 Describe and justify:
 
