@@ -2,6 +2,8 @@
 
 Use Conventional Commits for commit messages.
 
+Use `features/<short-description>` for feature branch names.
+
 Commit relevant changes immediately after completing a self-contained task.
 
 Keep the README updated when the project structure or contents change, including links to new labs.
