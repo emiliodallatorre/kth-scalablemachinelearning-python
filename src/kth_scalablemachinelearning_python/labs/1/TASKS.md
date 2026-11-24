@@ -27,9 +27,9 @@ Start from and extend the following questions:
 - [x] What does an example represent, and how are the classes distributed?
 - [ ] Which preprocessing steps are needed for the two architectures?
 - [x] How is the dataset preprocessed and split?
-- [ ] How is randomness controlled in the experiment?
+- [x] How is randomness controlled in the experiment?
 
-Progress: The current preprocessing converts images to tensors; model-specific preprocessing and full training reproducibility still need to be addressed.
+Progress: The current preprocessing converts images to tensors. The split, training shuffle, and model initialization use a fixed seed; the comparison also seeds PyTorch and enables deterministic algorithms. Model-specific preprocessing and reproducibility across environments still need to be addressed.
 
 ## Task 2: Implement and compare the models
 
@@ -37,7 +37,16 @@ Progress: The current preprocessing converts images to tensors; model-specific p
 - [ ] Explain the changes from the original architectures and justify any further modifications
 - [ ] Train both models using a reproducible procedure and compare them under a clearly stated compute budget
 
-Progress: Provisional CIFAR-10 AlexNet and ResNet-18 models share a seeded factory. A simple CPU or MPS training and validation comparison is available; both adaptations still need to be checked against Part A9, and a full comparison under a justified budget remains.
+Progress: Provisional CIFAR-10 AlexNet and ResNet-18 models share a seeded factory. Both trained and produced validation predictions on MPS; their adaptations still need to be checked against Part A9, and a comparison under a justified compute budget remains.
+
+Preliminary run on the AMD Radeon Pro 5300M: one epoch per model, 45,000 training and 5,000 validation images, batch size 32, seed 42, SGD with learning rate 0.01 and momentum 0.9. Training times exclude validation.
+
+| Model | Training loss | Validation accuracy | Training time | Parameters |
+|---|---:|---:|---:|---:|
+| AlexNet | 2.1344 | 31.12% | 269.2 s | 4,813,642 |
+| ResNet-18 | 1.4443 | 63.52% | 950.9 s | 11,173,962 |
+
+Run with `OMP_NUM_THREADS=2 uv run python src/kth_scalablemachinelearning_python/labs/1/compare.py --device mps --batch-size 32`. This single-epoch result is preliminary, not a final model comparison; it uses different training times for the two models. The test set was not evaluated and trained weights were not saved.
 
 Describe and justify:
 
