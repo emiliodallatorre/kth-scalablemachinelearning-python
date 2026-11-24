@@ -19,21 +19,25 @@ Use CIFAR-10, which contains labelled colour images from ten classes. The datase
 ## Task 1: Study and prepare the data
 
 - [ ] Study CIFAR-10 before building the models
-- [ ] Create training and validation partitions from the provided training data and reserve the test data for final evaluation
-- [ ] Prepare reusable data loading and preprocessing steps
+- [x] Create training and validation partitions from the provided training data and reserve the test data for final evaluation
+- [x] Prepare reusable data loading and preprocessing steps
 
 Start from and extend the following questions:
 
-- [ ] What does an example represent, and how are the classes distributed?
+- [x] What does an example represent, and how are the classes distributed?
 - [ ] Which preprocessing steps are needed for the two architectures?
-- [ ] How is the dataset preprocessed and split?
+- [x] How is the dataset preprocessed and split?
 - [ ] How is randomness controlled in the experiment?
+
+Progress: The current preprocessing converts images to tensors; model-specific preprocessing and full training reproducibility still need to be addressed.
 
 ## Task 2: Implement and compare the models
 
 - [ ] Implement AlexNet and ResNet using PyTorch, starting with the recommended CIFAR-10 adaptations described in Part A9
 - [ ] Explain the changes from the original architectures and justify any further modifications
 - [ ] Train both models using a reproducible procedure and compare them under a clearly stated compute budget
+
+Progress: A provisional, untrained CIFAR-10 AlexNet and a seeded model factory are implemented. ResNet and the comparison remain, and the AlexNet adaptation still needs to be checked against Part A9.
 
 Describe and justify:
 
